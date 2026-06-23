@@ -16,7 +16,7 @@ const Listing = sequelize.define('Listing', {
     allowNull: false,
   },
   price: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.DECIMAL(10, 2),  
     allowNull: false,
   },
   status: {
