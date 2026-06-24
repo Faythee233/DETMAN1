@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const cloudinary = require('../config/cloudinary'); // your Cloudinary config
+const cloudinary = require('../config/cloudinary');
 const ProvenanceDoc = require('../models/ProvenanceDoc');
 
 // Upload provenance document
@@ -11,10 +11,10 @@ const uploadProvenanceDoc = async (req, res) => {
     // Generate hash for authenticity
     const fileHash = crypto.createHash('sha256').update(file.buffer).digest('hex');
 
-    // Upload directly using buffer (no streamifier needed)
+    // Upload to Cloudinary using buffer
     const result = await cloudinary.uploader.upload(
       `data:${file.mimetype};base64,${file.buffer.toString('base64')}`,
-      { resource_type: 'auto' }
+      { resource_type: 'auto', folder: 'provenance_docs' }
     );
 
     // Save metadata in DB
@@ -22,10 +22,12 @@ const uploadProvenanceDoc = async (req, res) => {
       transactionId: req.body.transactionId,
       fileUrl: result.secure_url,
       fileHash,
+      verified: false, // default until admin verifies
       verifiedBy: req.body.verifiedBy || null,
     });
 
-    res.json(doc);
+    console.log(`Provenance doc uploaded for transaction ${req.body.transactionId}`);
+    res.json({ success: true, doc });
   } catch (err) {
     console.error('Provenance upload error:', err.message);
     res.status(500).json({ error: err.message });
@@ -39,7 +41,8 @@ const getProvenanceDocs = async (req, res) => {
       where: { transactionId: req.params.transactionId }
     });
 
-    res.json(docs);
+    console.log(`Fetched ${docs.length} provenance docs for transaction ${req.params.transactionId}`);
+    res.json({ success: true, docs });
   } catch (err) {
     console.error('Provenance fetch error:', err.message);
     res.status(500).json({ error: err.message });

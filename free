@@ -1,0 +1,114 @@
+{
+  "message": "User registered successfully",
+  "user": {
+    "role": "buyer",
+    "id": 2,
+    "name": "tenseki",
+    "email": "tentet3@gmail.com",
+    "password": "$2b$10$64JvcM/xICuvrq6uyMKwp.mXi9OiTukCYGSm4RFi/EtKDosCcvtoK",
+    "updatedAt": "2026-06-23T21:47:48.666Z",
+    "createdAt": "2026-06-23T21:47:48.666Z"
+  }
+}
+
+
+{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ0ZW50ZXQzQGdtYWlsLmNvbSIsImlhdCI6MTc4MjI1MTU1OCwiZXhwIjoxNzgyMzM3OTU4fQ.yDZttLKRv6um5vXtQA28ntHuJU1ludVeWEpgVSNeFQg"
+}
+
+//
+{
+  "message": "User registered successfully",
+  "user": {
+    "role": "buyer",
+    "id": 3,
+    "name": "Vaee Allen",
+    "email": "barry@gmail.com",
+    "password": "$2b$10$bGp2Y8AtG3qyVGvrUYZL8eEcDyXSLmJY8iykZUSRcbiFQPCOczTO2",
+    "updatedAt": "2026-06-23T21:59:08.936Z",
+    "createdAt": "2026-06-23T21:59:08.936Z"
+  }
+}
+
+{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJiYXJyeUBnbWFpbC5jb20iLCJpYXQiOjE3ODIyNTI0NjgsImV4cCI6MTc4MjMzODg2OH0.8ScVot8EZsxGdMzMhe_ZxtSACfPJR-pZwsZGO9nf-T8"
+}
+
+{
+  
+ "email": "barry@gmail.com",
+ "password": "grantgust"
+  
+}
+
+{
+  "message": "User registered successfully",
+  "user": {
+    "role": "collector",
+    "id": 4,
+    "name": "godman gooday",
+    "email": "bestsong@gmail.com",
+    "password": "$2b$10$kilza3Hb/PEeEZaEtGxhI.bcVQLnpOdqM4MohlsN50LXWlrkIXoye",
+    "updatedAt": "2026-06-23T22:11:04.012Z",
+    "createdAt": "2026-06-23T22:11:04.012Z"
+  }
+}
+{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZW1haWwiOiJiZXN0c29uZ0BnbWFpbC5jb20iLCJpYXQiOjE3ODIyNTI4NDUsImV4cCI6MTc4MjMzOTI0NX0.DILTN5ri4kyH8aZKoMQJ3vQDjH7z48duJAqu9qeV55c"
+}
+{
+  
+"email": "bestsong@gmail.com",
+"password": "speakers"
+
+}
+
+//
+{
+  "message": "User registered successfully",
+  "user": {
+    "id": 12,
+    "name": "kaunnyboy",
+    "email": "ssuu8ug@gmail.com",
+    "password": "$2b$10$r8BkW2j/tNi7AvAVmLgwBOlhgah4Q7Z.XYlZWCJdWueS4y6k4907e",
+    "role": "admin",
+    "updatedAt": "2026-06-23T22:25:43.325Z",
+    "createdAt": "2026-06-23T22:25:43.325Z"
+  }
+}
+
+{
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIsImVtYWlsIjoic3N1dTh1Z0BnbWFpbC5jb20iLCJpYXQiOjE3ODIyNTM2NjIsImV4cCI6MTc4MjM0MDA2Mn0.VRuNR-Axk2VJU8TcNV9MeshTJDERv0N9RO2DZ0AytmY"
+}
+
+{
+
+"email": "ssuu8ug@gmail.com",
+"password": "speakers"
+}
+
+{
+  
+  "title":"the kueen",
+   "description":"one or twos",
+   "price": 34.00,
+   "sellerId": 12
+
+}
+
+{
+  "message": "Listing created successfully",
+  "listing": {
+    "status": "active",
+    "id": 5,
+    "title": "the kueen",
+    "description": "one or twos",
+    "price": 34,
+    "updatedAt": "2026-06-23T22:43:01.720Z",
+    "createdAt": "2026-06-23T22:43:01.720Z"
+  }
+}

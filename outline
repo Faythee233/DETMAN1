@@ -1,0 +1,86 @@
+Alright — let’s stitch everything together into one **full flow** so you can see how all the moving parts connect:  
+
+---
+
+## 🛒 1. Listing
+- **Seller** posts a product/service listing.  
+- Stored in your `Listings` table.  
+- Buyers browse and select items.  
+
+---
+
+## 💳 2. Transaction Creation
+- **Buyer** clicks “Buy” → backend creates a new record in `Payments`.  
+- Example Sequelize code:
+  ```js
+  const tx = await Payments.create({
+    buyerId: req.user.id,
+    sellerId: listing.sellerId,
+    amount: listing.price,
+    status: 'pending'
+  });
+  ```
+- Database auto‑generates `id` → this is your **transactionId**.  
+- Response to client includes that `transactionId`.  
+
+---
+
+## 💰 3. Payment Initiation
+- Buyer is redirected to **Paystack**.  
+- Paystack returns `authorization_url`.  
+- Buyer completes payment.  
+- On success, webhook or manual verification calls:
+  ```js
+  EscrowService.holdFunds(transactionId, reference);
+  ```
+- Transaction status becomes `in_escrow`.  
+
+---
+
+## 📄 4. Provenance Upload
+- **Seller** uploads provenance docs via `/provenance/upload`.  
+- Controller:
+  - Uploads file to **Cloudinary**.  
+  - Generates **SHA256 hash**.  
+  - Saves metadata in `ProvenanceDocs` table with `transactionId`.  
+- Docs are linked to the transaction but `verified = false`.  
+
+---
+
+## 👨‍⚖️ 5. Admin Verification
+- **Admin** reviews provenance docs.  
+- If valid → sets `verified = true`.  
+- This step is critical: escrow won’t move funds without verified docs.  
+
+---
+
+## 🔒 6. Escrow Actions
+- **Release Funds**:  
+  - Admin triggers release → controller calls `EscrowService.releaseFunds(transactionId)`.  
+  - Escrow checks for verified docs.  
+  - If yes → calls Paystack Transfer API → funds move to seller → status = `released`.  
+
+- **Refund Funds**:  
+  - Admin triggers refund → controller calls `EscrowService.refundTransaction(transactionId)`.  
+  - Escrow checks for verified docs.  
+  - If yes → calls Paystack Refund API → funds return to buyer → status = `refunded`.  
+
+---
+
+## 🔑 Flow Summary
+1. **Seller** → creates listing.  
+2. **Buyer** → creates transaction → gets `transactionId`.  
+3. **Buyer pays** → funds held in escrow.  
+4. **Seller uploads provenance docs** → tied to transaction.  
+5. **Admin verifies docs** → marks them verified.  
+6. **EscrowService** → releases or refunds funds depending on admin action.  
+
+---
+
+⚡ This way, the **transaction ID** is the anchor: created first, used in provenance uploads, checked in escrow, and referenced by admin.  
+
+Would you like me to draw this out as a **step‑by‑step diagram (Buyer → Server → Paystack → Cloudinary → Admin → Escrow)** so you can visualize the interactions more clearly?
+
+
+
+// none of the id's for transactions have checks

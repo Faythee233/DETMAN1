@@ -1,57 +1,69 @@
-const Transaction = require('../models/Payments');
+// controllers/adminController.js
 const ProvenanceDoc = require('../models/ProvenanceDoc');
+const EscrowService = require('../services/EscrowService');
+const cloudinary = require('../config/cloudinary'); // your Cloudinary setup
 
-// Verify provenance doc
-const verifyProvenanceDoc = async (req, res) => {
+// Upload provenance doc to Cloudinary
+const uploadProvenanceDoc = async (req, res, next) => {
   try {
-    const { docId, verifiedBy } = req.body;
-    const doc = await ProvenanceDoc.findByPk(docId);
-    if (!doc) return res.status(404).json({ error: 'Doc not found' });
+    const { transactionId, docType } = req.body;
+    const file = req.file; // assuming multer handles file upload
 
-    doc.verifiedBy = verifiedBy;
+    if (!file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(file.path, {
+      folder: 'provenance_docs',
+    });
+
+    // Save record in DB
+    const doc = await ProvenanceDoc.create({
+      transactionId,
+      docType,
+      cloudinaryUrl: result.secure_url,
+      cloudinaryPublicId: result.public_id,
+    });
+
+    res.json({ success: true, doc });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Admin verifies provenance doc
+const verifyProvenanceDoc = async (req, res, next) => {
+  try {
+    const { docId } = req.body;
+
+    const doc = await ProvenanceDoc.findByPk(docId);
+    if (!doc) {
+      return res.status(404).json({ error: 'Provenance document not found' });
+    }
+
+    doc.verified = true;
     await doc.save();
 
-    res.json({ message: 'Provenance document verified', doc });
+    res.json({ success: true, message: 'Provenance document verified', doc });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-// Release escrow funds to seller
-const releaseEscrow = async (req, res) => {
+// Admin triggers escrow release
+const releaseEscrow = async (req, res, next) => {
   try {
-    const txn = await Transaction.findByPk(req.params.id);
-    if (!txn) return res.status(404).json({ error: 'Transaction not found' });
-
-    txn.status = 'completed';
-    await txn.save();
-
-    res.json({ message: 'Escrow released, transaction completed', txn });
+    const { transactionId } = req.body;
+    const tx = await EscrowService.releaseFunds(transactionId);
+    res.json(tx);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-// Refund escrow back to buyer
-const refundEscrow = async (req, res) => {
-  try {
-    const txn = await Transaction.findByPk(req.params.id);
-    if (!txn) return res.status(404).json({ error: 'Transaction not found' });
-
-    txn.status = 'refunded';
-    await txn.save();
-
-    // Here you would also call Paystack’s refund API if needed
-    // Example: axios.post('https://api.paystack.co/refund', { reference: txn.reference })
-
-    res.json({ message: 'Escrow refunded to buyer', txn });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
 
 module.exports = {
   verifyProvenanceDoc,
   releaseEscrow,
-  refundEscrow
 };

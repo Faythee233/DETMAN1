@@ -7,10 +7,8 @@ const { verifyProvenanceDoc, releaseEscrow, refundEscrow } = require('../control
 // Verify provenance document
 router.post('/provenance/verify', authenticate, authorizeRole('admin'), verifyProvenanceDoc);
 
-// Release escrow funds to seller
+// Release escrow funds 
 router.post('/transactions/:id/release', authenticate, authorizeRole('admin'), releaseEscrow);
 
-// Refund escrow back to buyer
-router.post('/transactions/:id/refund', authenticate, authorizeRole('admin'), refundEscrow);
 
 module.exports = router;

@@ -1,26 +1,47 @@
+
+// models/ProvenanceDoc.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
-const Transaction = require('./Payments');
-const User = require('./User');
+const sequelize = require('../config/db'); // adjust path to your Sequelize instance
 
 const ProvenanceDoc = sequelize.define('ProvenanceDoc', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  transactionId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'Payments', // name of your Transaction/Payments table
+      key: 'id',
+    },
+    onDelete: 'CASCADE',
+  },
+  docType: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    comment: 'Type of provenance doc (e.g., certificate, receipt, license)',
+  },
+  hash: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    comment: 'Cryptographic hash of the document for integrity verification',
+  },
   fileUrl: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
+  
   },
-  fileHash: {
-    type: DataTypes.STRING,
-    allowNull: false,
+  verified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    comment: 'Whether this doc has been reviewed and verified by admin',
   },
 }, {
+  tableName: 'ProvenanceDocs',
   timestamps: true,
 });
 
-// Associations
-ProvenanceDoc.belongsTo(Transaction, { foreignKey: 'transactionId', as: 'transaction' });
-Transaction.hasMany(ProvenanceDoc, { foreignKey: 'transactionId', as: 'provenanceDocs' });
-
-ProvenanceDoc.belongsTo(User, { foreignKey: 'verifiedBy', as: 'verifier' });
-User.hasMany(ProvenanceDoc, { foreignKey: 'verifiedBy', as: 'verifiedDocs' });
-
 module.exports = ProvenanceDoc;
+

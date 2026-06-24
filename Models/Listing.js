@@ -12,8 +12,8 @@ const Listing = sequelize.define('Listing', {
     allowNull: false,
   },
   bottleDetails: {
-    type: DataTypes.JSON,
-    allowNull: false,
+    type: DataTypes.STRING,
+    allowNull: true,
   },
   price: {
     type: DataTypes.DECIMAL(10, 2),  
@@ -26,9 +26,5 @@ const Listing = sequelize.define('Listing', {
 }, {
   timestamps: true,
 });
-
-// Associations
-Listing.belongsTo(User, { foreignKey: 'userId', as: 'collector' });
-User.hasMany(Listing, { foreignKey: 'userId', as: 'listings' });
 
 module.exports = Listing;

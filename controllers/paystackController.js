@@ -1,7 +1,7 @@
-const Transaction = require('../models/Transaction');
+// controllers/paystackController.js
+const Transaction = require('../models/payments');
 const EscrowService = require('../services/escrowService');
-const paystack = require('../config/paystack'); // your Paystack SDK or axios wrapper
-const logger = require('../utils/logger');
+const paystack = require('../services/paymentservice'); // your Paystack SDK or axios wrapper
 
 // Initiate payment
 async function initiatePayment(req, res) {
@@ -21,10 +21,10 @@ async function initiatePayment(req, res) {
     tx.paymentReference = response.data.reference;
     await tx.save();
 
-    logger.info(`Payment initiated for transaction ${transactionId}, reference ${tx.paymentReference}`);
+    console.log(`Payment initiated for transaction ${transactionId}, reference ${tx.paymentReference}`);
     res.json({ authorizationUrl: response.data.authorization_url });
   } catch (err) {
-    logger.error(`Payment initiation failed: ${err.message}`);
+    console.error(`Payment initiation failed: ${err.message}`);
     res.status(500).json({ error: err.message });
   }
 }
@@ -39,15 +39,17 @@ async function verifyPayment(req, res) {
       const tx = await Transaction.findOne({ where: { paymentReference: reference } });
       if (tx) {
         await EscrowService.holdFunds(tx.id, reference);
+        console.log(`Payment verified and funds held in escrow for transaction ${tx.id}`);
         res.json({ success: true, message: 'Payment verified and funds held in escrow', transaction: tx });
       } else {
         res.status(404).json({ error: 'Transaction not found' });
       }
     } else {
+      console.log(`Payment verification failed for reference ${reference}`);
       res.json({ success: false, message: 'Payment verification failed' });
     }
   } catch (err) {
-    logger.error(`Payment verification failed: ${err.message}`);
+    console.error(`Payment verification failed: ${err.message}`);
     res.status(500).json({ error: err.message });
   }
 }
@@ -61,12 +63,12 @@ async function handleWebhook(req, res) {
       const tx = await Transaction.findOne({ where: { paymentReference: reference } });
       if (tx) {
         await EscrowService.holdFunds(tx.id, reference);
-        logger.info(`Webhook: funds held in escrow for transaction ${tx.id}`);
+        console.log(`Webhook: funds held in escrow for transaction ${tx.id}`);
       }
     }
     res.sendStatus(200);
   } catch (err) {
-    logger.error(`Webhook handling failed: ${err.message}`);
+    console.error(`Webhook handling failed: ${err.message}`);
     res.status(500).json({ error: err.message });
   }
 }
@@ -76,5 +78,3 @@ module.exports = {
   verifyPayment,
   handleWebhook
 };
-
-
